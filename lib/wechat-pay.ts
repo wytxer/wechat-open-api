@@ -4,12 +4,16 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { IWechatPayConfig } from './wechat.interface'
 import {
   ISignVerifyOptions,
+  IDecryptCipherTextOptions,
   ISignPrepayOptions,
   IGetCertificateData,
   ITransactionJsApiOptions,
   ITransactionJsApiData,
   IRefundsRequiredOutTradeNoOptions,
-  IRefundsRequiredTransactionId
+  IRefundsRequiredTransactionId,
+  ITransactionInfoByIdOptions,
+  ITransactionInfoByOrderIdOptions,
+  IRefundInfoOptions
 } from './wechat-pay.interface'
 
 export class WechatPay {
@@ -49,8 +53,13 @@ export class WechatPay {
     config.headers = config.headers || {}
     // 设置授权请求头
     config.headers.Authorization = this.getAuthorizationHeader(config)
+    config.headers.Accept = 'application/json'
+    config.headers['Content-Type'] = 'application/json'
+    config.headers['Accept-Encoding'] = 'gzip'
     // 拼接完整的请求地址
     config.url = this.apiUrl + config.url
+    // 设置数据响应类型
+    config.responseType = 'json'
     return await axios(config).then((res) => res.data)
   }
 
@@ -74,50 +83,6 @@ export class WechatPay {
     const signature = createSign('RSA-SHA256').update(signInfo.join('\n')).sign(this.privateKey, 'base64')
     // 构造请求头
     return `${this.authType} mchid="${this.mchid}",nonce_str="${nonceString}",timestamp="${timestamp}",serial_no="${this.serialNumber}",signature="${signature}"`
-  }
-
-  /**
-   * 应答签名验证
-   * @param config
-   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_1.shtml
-   * @returns
-   */
-  async signVerify(options: ISignVerifyOptions): Promise<boolean> {
-    const { timestamp, nonce, serial, body, signature } = options
-    const verify = createVerify('RSA-SHA256')
-    verify.update([timestamp, nonce, JSON.stringify(body), ''].join('\n'))
-
-    await this.getCertificates()
-    if (!this.certificateMap[serial]) throw new Error('证书不存在')
-
-    return verify.verify(this.certificateMap[serial], signature, 'base64')
-  }
-
-  /**
-   * 预付款参数签名
-   * @param prepayId
-   */
-  signPrepayOptions(prepayId: string): ISignPrepayOptions {
-    // 时间戳
-    const timeStamp = (Date.now() / 1000).toFixed(0)
-    // 签名的随机字符串
-    const nonceString = Math.random().toString(36).substring(2, 15)
-    // 下单接口返回的预付款 id
-    const packageString = `prepay_id=${prepayId}`
-    // 签名类型，v3 固定值 RSA
-    const signType = 'RSA'
-    // 生成签名
-    const paySign = createSign('RSA-SHA256')
-      .update([this.appid, timeStamp, nonceString, packageString, ''].join('\n'))
-      .sign(this.privateKey, 'base64')
-
-    return {
-      timeStamp,
-      nonceStr: nonceString,
-      package: packageString,
-      signType,
-      paySign
-    }
   }
 
   /**
@@ -149,6 +114,70 @@ export class WechatPay {
   }
 
   /**
+   * 应答签名验证
+   * @param config
+   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_1.shtml
+   * @returns
+   */
+  async signVerify(options: ISignVerifyOptions): Promise<boolean> {
+    const { timestamp, nonce, serial, body, signature } = options
+    const verify = createVerify('RSA-SHA256')
+    verify.update([timestamp, nonce, JSON.stringify(body), ''].join('\n'))
+
+    await this.getCertificates()
+    if (!this.certificateMap[serial]) throw new Error('证书不存在')
+
+    return verify.verify(this.certificateMap[serial], signature, 'base64')
+  }
+
+  /**
+   * 解密支付数据
+   * @param config
+   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_2.shtml
+   * @returns
+   */
+  decryptCipherText(config: IDecryptCipherTextOptions): Record<string, any> {
+    const cipherText = Buffer.from(decodeURIComponent(config.cipherText), 'base64')
+    const authTag = cipherText.subarray(cipherText.length - 16)
+    const data = cipherText.subarray(0, cipherText.length - 16)
+
+    const decipher = createDecipheriv('aes-256-gcm', this.secret, config.nonce)
+    decipher.setAuthTag(authTag)
+    decipher.setAAD(Buffer.from(config.associate))
+
+    let decryptedText = decipher.update(data, null, 'utf8')
+    decryptedText += decipher.final()
+    return JSON.parse(decryptedText)
+  }
+
+  /**
+   * 预付款参数签名
+   * @param prepayId
+   */
+  signPrepayOptions(prepayId: string): ISignPrepayOptions {
+    // 时间戳
+    const timeStamp = (Date.now() / 1000).toFixed(0)
+    // 签名的随机字符串
+    const nonceString = Math.random().toString(36).substring(2, 15)
+    // 下单接口返回的预付款 id
+    const packageString = `prepay_id=${prepayId}`
+    // 签名类型，v3 固定值 RSA
+    const signType = 'RSA'
+    // 生成签名
+    const paySign = createSign('RSA-SHA256')
+      .update([this.appid, timeStamp, nonceString, packageString, ''].join('\n'))
+      .sign(this.privateKey, 'base64')
+
+    return {
+      timeStamp,
+      nonceStr: nonceString,
+      package: packageString,
+      signType,
+      paySign
+    }
+  }
+
+  /**
    * 下单
    * @description 支持 JSAPI 下单
    * @param code
@@ -167,13 +196,46 @@ export class WechatPay {
    * 申请退款
    * @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_9.shtml
    */
-  public async refunds(
+  async refunds(
     options: IRefundsRequiredOutTradeNoOptions | IRefundsRequiredTransactionId
   ): Promise<Record<string, any>> {
     return await this.request({
       method: 'post',
       url: '/v3/refund/domestic/refunds',
-      data: { appid: this.appid, mchid: this.mchid, ...options }
+      data: options
+    })
+  }
+
+  /**
+   * 查询订单
+   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_2.shtml
+   */
+  async transactionInfoById(options: ITransactionInfoByIdOptions): Promise<Record<string, any>> {
+    return await this.request({
+      method: 'get',
+      url: `/v3/pay/transactions/id/${options.transaction_id}?mchid=${options.mchid}`
+    })
+  }
+
+  /**
+   * 查询订单
+   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_2.shtml
+   */
+  async transactionInfoByOutTradeNo(options: ITransactionInfoByOrderIdOptions): Promise<Record<string, any>> {
+    return await this.request({
+      method: 'get',
+      url: `/v3/pay/transactions/out-trade-no/${options.out_trade_no}?mchid=${options.mchid}`
+    })
+  }
+
+  /**
+   * 查询单笔退款
+   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_5_10.shtml
+   */
+  async refundInfo(options: IRefundInfoOptions): Promise<Record<string, any>> {
+    return await this.request({
+      method: 'get',
+      url: `/v3/refund/domestic/refunds/${options.out_refund_no}`
     })
   }
 }

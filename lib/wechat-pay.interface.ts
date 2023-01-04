@@ -15,6 +15,18 @@ export interface ISignVerifyOptions {
 }
 
 /**
+ * 解密支付数据参数
+ */
+export interface IDecryptCipherTextOptions {
+  // 附加数据
+  associate: string
+  // 随机串
+  nonce: string
+  // 数据密文
+  cipherText: string
+}
+
+/**
  * 预付款参数签名参数
  */
 export interface ISignPrepayOptions {
@@ -188,4 +200,32 @@ export interface IRefundsRequiredOutTradeNoOptions extends IRefundsOptions {
   transaction_id?: string
   // 商户订单号
   out_trade_no: string
+}
+
+/**
+ * 查询订单参数
+ */
+export interface ITransactionInfoByIdOptions {
+  // 商户号
+  mchid: string
+  // 微信支付订单号
+  transaction_id: string
+}
+
+/**
+ * 查询订单参数
+ */
+export interface ITransactionInfoByOrderIdOptions {
+  // 商户号
+  mchid: string
+  // 微信支付订单号
+  out_trade_no: string
+}
+
+/**
+ * 查询单笔退款参数
+ */
+export interface IRefundInfoOptions {
+  // 商户退款单号
+  out_refund_no: string
 }
