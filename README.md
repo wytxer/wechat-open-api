@@ -1,4 +1,4 @@
-# WECHAT OPEN API
+# WECHAT API
 
 微信生态服务端接口，完善中，欢迎共建~
 
@@ -6,7 +6,7 @@
 ## 使用
 
 ```ts
-import { WechatApp } from 'wechat-open-api'
+import { WechatApp } from 'wechat-api'
 
 const wechatApp = new WechatApp({ appid: '', secret: '' })
 ```

@@ -1,6 +1,6 @@
 {
-  "name": "wechat-open-api",
-  "version": "0.1.0",
+  "name": "wechat-api",
+  "version": "0.1.1",
   "description": "微信生态服务端接口",
   "main": "dist/index.js",
   "scripts": {
@@ -42,7 +42,7 @@
     "node": ">=16"
   },
   "license": "MIT",
-  "homepage": "https://github.com/wytxer/wechat-open-api/#readme",
+  "homepage": "https://github.com/wytxer/wechat-api/#readme",
   "keywords": [
     "wechat",
     "weixin",
@@ -59,9 +59,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wytxer/wechat-open-api.git"
+    "url": "https://github.com/wytxer/wechat-api.git"
   },
   "bugs": {
-    "url": "https://github.com/wytxer/wechat-open-api/issues"
+    "url": "https://github.com/wytxer/wechat-api/issues"
   }
 }
