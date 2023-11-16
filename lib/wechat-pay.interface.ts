@@ -58,7 +58,7 @@ export interface IGetCertificateData {
 }
 
 /**
- * 下单参数
+ * JSAPI 下单参数
  */
 export interface ITransactionJsApiOptions {
   // 应用 id
@@ -137,11 +137,24 @@ export interface ITransactionJsApiOptions {
 }
 
 /**
- * 下单响应数据
+ * JSAPI 下单响应数据
  */
 export interface ITransactionJsApiData {
   // 预支付 id
   prepay_id: string
+}
+
+/**
+ * Native 下单参数
+ */
+export type ITransactionNativeOptions = Omit<ITransactionJsApiOptions, 'payer'>
+
+/**
+ * Native 下单响应数据
+ */
+export interface ITransactionNativeData {
+  // 二维码链接
+  code_url: string
 }
 
 interface IGoodsDetail {

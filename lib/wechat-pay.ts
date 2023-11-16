@@ -9,6 +9,8 @@ import {
   IGetCertificateData,
   ITransactionJsApiOptions,
   ITransactionJsApiData,
+  ITransactionNativeOptions,
+  ITransactionNativeData,
   IRefundsRequiredOutTradeNoOptions,
   IRefundsRequiredTransactionId,
   ITransactionInfoByIdOptions,
@@ -178,8 +180,8 @@ export class WechatPay {
   }
 
   /**
-   * 下单
-   * @description 支持 JSAPI 下单
+   * JSAPI 下单
+   * @description
    * @param code
    * @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_1.shtml
    * @returns
@@ -188,6 +190,21 @@ export class WechatPay {
     return await this.request({
       method: 'post',
       url: '/v3/pay/transactions/jsapi',
+      data: { appid: this.appid, mchid: this.mchid, ...options }
+    })
+  }
+
+  /**
+   * Native 下单
+   * @description
+   * @param code
+   * @link https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_1.shtml
+   * @returns
+   */
+  async transactionNative(options: ITransactionNativeOptions): Promise<ITransactionNativeData> {
+    return await this.request({
+      method: 'post',
+      url: '/v3/pay/transactions/native',
       data: { appid: this.appid, mchid: this.mchid, ...options }
     })
   }
