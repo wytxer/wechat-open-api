@@ -5,7 +5,7 @@ export interface IAccessTokenResponse extends IStateResponse {
   expires_in: number
 }
 
-export interface IQrCodeResponse {
+export interface IQrcodeResponse {
   ticket: string
   expire_seconds: number
   url: string
@@ -71,7 +71,7 @@ export interface ITagsResponse extends IStateResponse {
   }[]
 }
 
-export interface IQrCodeParams {
+export interface IQrcodeParams {
   access_token: string
   expire_seconds: number
   action_name: number | string

@@ -3,10 +3,10 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { IWechatConfig, IStateResponse } from './wechat.interface'
 import {
   IAccessTokenResponse,
-  IQrCodeResponse,
+  IQrcodeResponse,
   IQueryUserInfoResponse,
   ITagsResponse,
-  IQrCodeParams,
+  IQrcodeParams,
   IRemarkParams,
   IUsersAddTagParams,
   ICreateMenusParams
@@ -23,7 +23,7 @@ export class WechatOfficialAccount {
     this.config = config
   }
 
-  static qrCodeAddress = 'https://mp.weixin.qq.com/cgi-bin/showqrcode'
+  static qrcodeAddress = 'https://mp.weixin.qq.com/cgi-bin/showqrcode'
 
   async request(config: AxiosRequestConfig) {
     config.url = this.apiUrl + config.url
@@ -49,7 +49,7 @@ export class WechatOfficialAccount {
    * @link https://developers.weixin.qq.com/doc/offiaccount/Account_Management/Generating_a_Parametric_QR_Code.html
    * @returns
    */
-  async qrCode(params: IQrCodeParams): Promise<IQrCodeResponse> {
+  async qrcode(params: IQrcodeParams): Promise<IQrcodeResponse> {
     const { access_token, expire_seconds, action_name, action_info } = params
 
     return await this.request({
