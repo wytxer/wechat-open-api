@@ -5,7 +5,11 @@ import {
   ICode2SessionResponse,
   IAccessTokenResponse,
   IGetPhoneNumberResponse,
-  ISendParams
+  ICheckTextResponse,
+  ICheckImageAndMediaResponse,
+  ISendParams,
+  ICheckTextOptions,
+  ICheckImageAndMediaOptions
 } from './wechat-app.interface'
 
 export class WechatApp {
@@ -86,6 +90,37 @@ export class WechatApp {
         miniprogram_state,
         lang
       }
+    })
+  }
+
+  /**
+   * 文本安全检测
+   * @param options
+   * @link https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/sec-center/sec-check/msgSecCheck.html
+   * @returns
+   */
+  async checkText(options: ICheckTextOptions): Promise<ICheckTextResponse> {
+    const { access_token, content, version = 2, scene, openid, title, nickname, signature } = options
+    return await this.request({
+      method: 'post',
+      url: `/wxa/msg_sec_check?access_token=${access_token}`,
+      data: { content, version, scene, openid, title, nickname, signature }
+    })
+  }
+
+  /**
+   * 图片和音视频安全检测
+   * @param options
+   * @link https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/sec-center/sec-check/mediaCheckAsync.html
+   * @link https://developers.weixin.qq.com/miniprogram/dev/framework/server-ability/message-push.html
+   * @returns
+   */
+  async checkImageAndMedia(options: ICheckImageAndMediaOptions): Promise<ICheckImageAndMediaResponse> {
+    const { access_token, media_url, media_type, version = 2, scene, openid } = options
+    return await this.request({
+      method: 'post',
+      url: `/wxa/media_check_async?access_token=${access_token}`,
+      data: { media_url, media_type, version, scene, openid }
     })
   }
 }
