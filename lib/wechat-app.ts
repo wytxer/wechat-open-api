@@ -58,6 +58,21 @@ export class WechatApp {
   }
 
   /**
+   * 获取稳定版接口调用凭据
+   * @link https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/mp-access-token/getStableAccessToken.html
+   * @returns
+   */
+  async stableAccessToken(forceRefresh = false): Promise<IAccessTokenResponse> {
+    const { appid, secret } = this.config
+
+    return await this.request({
+      method: 'post',
+      url: '/cgi-bin/stable_token',
+      data: { appid, secret, force_refresh: forceRefresh, grant_type: 'client_credential' }
+    })
+  }
+
+  /**
    * 获取小程序授权手机号
    * @link https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/phonenumber/phonenumber.getPhoneNumber.html
    * @returns
