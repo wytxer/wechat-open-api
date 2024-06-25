@@ -3,6 +3,11 @@ export interface IWechatConfig {
   secret: string
 }
 
+export interface IWecomConfig {
+  corpid: string
+  secret: string
+}
+
 export interface IStateResponse {
   errcode: string
   errmsg: string
