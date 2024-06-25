@@ -20,3 +20,9 @@ export interface IWechatPayConfig {
   privateKey: Buffer
   secret: string
 }
+
+export enum Gender {
+  unknown = '0',
+  male = '1',
+  female = '2'
+}

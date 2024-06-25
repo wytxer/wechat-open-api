@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { IWecomConfig } from './wechat.interface'
-import { IAccessTokenResponse } from './wecom-app.interface'
+import { IAccessTokenResponse, IGetMemberResponse } from './wecom-app.interface'
 
 export class WecomApp {
   constructor(readonly config: IWecomConfig, readonly apiUrl: string = 'https://qyapi.weixin.qq.com') {
@@ -31,6 +31,18 @@ export class WecomApp {
     return await this.request({
       method: 'get',
       url: `/cgi-bin/gettoken?corpid=${corpid}&corpsecret=${secret}`
+    })
+  }
+
+  /**
+   * 读取成员
+   * @link https://developer.work.weixin.qq.com/document/path/90196
+   * @returns
+   */
+  async getMember(accessToken: string, userId: string): Promise<IGetMemberResponse> {
+    return await this.request({
+      method: 'get',
+      url: `/cgi-bin/user/get?access_token=${accessToken}&userid=${userId}`
     })
   }
 }
