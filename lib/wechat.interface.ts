@@ -4,6 +4,7 @@ export interface IWechatConfig {
 }
 
 export interface IWecomConfig {
+  agentid: string
   corpid: string
   secret: string
 }

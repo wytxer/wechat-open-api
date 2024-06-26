@@ -45,15 +45,15 @@ export class WecomApp {
    * @link https://developer.work.weixin.qq.com/document/path/91022
    * @returns
    */
-  async authorizeUrl({ redirectUri, scope, state = 'STATE' }: IAuthorizeUrlParams): Promise<string> {
+  async authorizeUrl({ redirectUri, loginType, state = 'STATE' }: IAuthorizeUrlParams): Promise<string> {
     const params = new URLSearchParams()
     params.append('appid', this.config.corpid)
+    params.append('login_type', loginType)
     params.append('redirect_uri', encodeURIComponent(redirectUri))
-    params.append('response_type', 'code')
-    params.append('scope', scope)
+    params.append('agentid', this.config.agentid)
     params.append('state', state)
 
-    return `https://open.weixin.qq.com/connect/oauth2/authorize?${params.toString()}#wechat_redirect`
+    return `https://login.work.weixin.qq.com/wwlogin/sso/login?${params.toString()}`
   }
 
   /**

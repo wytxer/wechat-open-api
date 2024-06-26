@@ -23,7 +23,7 @@ export interface IAccessTokenResponse extends IStateResponse {
 
 export interface IAuthorizeUrlParams {
   redirectUri: string
-  scope: 'snsapi_base' | 'snsapi_userinfo'
+  loginType: 'CorpApp' | 'ServiceApp'
   state?: string
 }
 
