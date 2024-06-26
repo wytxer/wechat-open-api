@@ -16,6 +16,12 @@ export interface IAccessTokenResponse extends IStateResponse {
   expires_in: number
 }
 
+export interface IAuthorizeUrlParams {
+  redirectUri: string
+  scope: 'snsapi_base' | 'snsapi_userinfo'
+  state?: string
+}
+
 export interface IGetMemberResponse extends IStateResponse {
   // 成员UserID。对应管理端的账号，企业内必须唯一。不区分大小写，长度为1~64个字节；第三方应用返回的值为open_userid
   userid: string

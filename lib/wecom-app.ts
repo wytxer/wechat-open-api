@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { IWecomConfig } from './wechat.interface'
-import { IAccessTokenResponse, IGetMemberResponse } from './wecom-app.interface'
+import { IAccessTokenResponse, IAuthorizeUrlParams, IGetMemberResponse } from './wecom-app.interface'
 
 export class WecomApp {
   constructor(readonly config: IWecomConfig, readonly apiUrl: string = 'https://qyapi.weixin.qq.com') {
@@ -32,6 +32,22 @@ export class WecomApp {
       method: 'get',
       url: `/cgi-bin/gettoken?corpid=${corpid}&corpsecret=${secret}`
     })
+  }
+
+  /**
+   * 构造网页授权链接
+   * @link https://developer.work.weixin.qq.com/document/path/91022
+   * @returns
+   */
+  async authorizeUrl({ redirectUri, scope, state = 'STATE' }: IAuthorizeUrlParams): Promise<string> {
+    const params = new URLSearchParams()
+    params.append('appid', this.config.corpid)
+    params.append('redirect_uri', encodeURIComponent(redirectUri))
+    params.append('response_type', 'code')
+    params.append('scope', scope)
+    params.append('state', state)
+
+    return `https://open.weixin.qq.com/connect/oauth2/authorize?${params.toString()}#wechat_redirect`
   }
 
   /**
