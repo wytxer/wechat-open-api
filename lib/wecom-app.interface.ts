@@ -1,4 +1,9 @@
-import { Gender, IStateResponse } from './wechat.interface'
+import { Gender } from './wechat.interface'
+
+interface IStateResponse {
+  errcode: number
+  errmsg: string
+}
 
 export enum MemberStatus {
   // 已激活
@@ -20,6 +25,22 @@ export interface IAuthorizeUrlParams {
   redirectUri: string
   scope: 'snsapi_base' | 'snsapi_userinfo'
   state?: string
+}
+
+export interface IGetUserInfoResponse extends IStateResponse {
+  userid: string
+  user_ticket?: string
+}
+
+export interface IGetUserDetailResponse extends IStateResponse {
+  userid: string
+  gender: Gender
+  avatar: string
+  qr_code: string
+  mobile: string
+  email: string
+  biz_mail: string
+  address: string
 }
 
 export interface IGetMemberResponse extends IStateResponse {

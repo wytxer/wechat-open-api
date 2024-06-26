@@ -1,6 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { IWecomConfig } from './wechat.interface'
-import { IAccessTokenResponse, IAuthorizeUrlParams, IGetMemberResponse } from './wecom-app.interface'
+import {
+  IAccessTokenResponse,
+  IAuthorizeUrlParams,
+  IGetMemberResponse,
+  IGetUserDetailResponse,
+  IGetUserInfoResponse
+} from './wecom-app.interface'
 
 export class WecomApp {
   constructor(readonly config: IWecomConfig, readonly apiUrl: string = 'https://qyapi.weixin.qq.com') {
@@ -48,6 +54,33 @@ export class WecomApp {
     params.append('state', state)
 
     return `https://open.weixin.qq.com/connect/oauth2/authorize?${params.toString()}#wechat_redirect`
+  }
+
+  /**
+   * 获取访问用户身份
+   * @link https://developer.work.weixin.qq.com/document/path/91023
+   * @returns
+   */
+  async getUserInfo(accessToken: string, code: string): Promise<IGetUserInfoResponse> {
+    return await this.request({
+      method: 'get',
+      url: `/cgi-bin/auth/getuserinfo?access_token=${accessToken}&code=${code}`
+    })
+  }
+
+  /**
+   * 获取访问用户敏感信息
+   * @link https://developer.work.weixin.qq.com/document/path/90196
+   * @returns
+   */
+  async getUserDetail(accessToken: string, userTicket: string): Promise<IGetUserDetailResponse> {
+    return await this.request({
+      method: 'post',
+      url: `/cgi-bin/auth/getuserdetail?access_token=${accessToken}`,
+      data: {
+        user_ticket: userTicket
+      }
+    })
   }
 
   /**
