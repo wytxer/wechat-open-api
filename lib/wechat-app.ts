@@ -7,9 +7,11 @@ import {
   IGetPhoneNumberResponse,
   ICheckTextResponse,
   ICheckImageAndMediaResponse,
+  IGenerateUrlLinkResponse,
   ISendParams,
   ICheckTextOptions,
-  ICheckImageAndMediaOptions
+  ICheckImageAndMediaOptions,
+  IGenerateUrlLinkOptions
 } from './wechat-app.interface'
 
 export class WechatApp {
@@ -121,6 +123,21 @@ export class WechatApp {
       method: 'post',
       url: `/wxa/media_check_async?access_token=${access_token}`,
       data: { media_url, media_type, version, scene, openid }
+    })
+  }
+
+  /**
+   * 获取加密 URL Link
+   * @param options
+   * @link https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/qrcode-link/url-link/generateUrlLink.html#%E6%8E%A5%E5%8F%A3%E8%AF%B4%E6%98%8E
+   * @returns
+   */
+  async generateUrlLink(options: IGenerateUrlLinkOptions): Promise<IGenerateUrlLinkResponse> {
+    const { access_token, ...data } = options
+    return await this.request({
+      method: 'post',
+      url: `/wxa/generate_urllink?access_token=${access_token}`,
+      data
     })
   }
 }

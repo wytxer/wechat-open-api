@@ -61,6 +61,10 @@ export interface ICheckImageAndMediaResponse extends IStateResponse {
   trace_id: string
 }
 
+export interface IGenerateUrlLinkResponse extends IStateResponse {
+  url_link: string
+}
+
 export interface ISendParams {
   access_token: string
   touser: string
@@ -100,4 +104,33 @@ export interface ICheckImageAndMediaOptions {
   scene: 1 | 2 | 3 | 4
   // 用户的 openid（用户需在近两小时访问过小程序）
   openid: string
+}
+
+export interface IGenerateUrlLinkOptions {
+  access_token: string
+  // 通过 URL Link 进入的小程序页面路径，必须是已经发布的小程序存在的页面，不可携带 query。path 为空时会跳转小程序主页
+  path: string
+  // 通过 URL Link 进入小程序时的query，最大 1024 个字符，只支持数字，大小写英文以及部分特殊字符：!#$&'()*+,/:;=?@-._~%
+  query?: string
+  // 默认值：0。小程序 URL Link 失效类型，0：失效时间，1：失效间隔天数
+  expire_type?: 0 | 1
+  // 到期失效的 URL Link 的失效时间，为 Unix 时间戳。生成的到期失效 URL Link 在该时间前有效。最长有效期为30天。expire_type 为 0 必填
+  expire_time?: number
+  // 到期失效的URL Link的失效间隔天数。生成的到期失效URL Link在该间隔时间到达前有效。最长间隔天数为30天。expire_type 为 1 必填
+  expire_interval?: number
+  // 云开发静态网站自定义 H5 配置参数，可配置中转的云开发 H5 页面。不填默认用官方 H5 页面
+  cloud_base?: {
+    // 云开发环境
+    env: string
+    // 静态网站自定义域名，不填则使用默认域名
+    domain?: string
+    // 云开发静态网站 H5 页面路径，不可携带 query
+    path?: string
+    // 同上
+    query?: string
+    // 第三方批量代云开发时必填，表示创建该 env 的 appid（小程序/第三方平台）
+    resource_appid?: string
+  }
+  // 默认值：release。要打开的小程序版本。正式版：release，体验版：trial，开发版为：develop，仅在微信外打开时生效。
+  env_version?: string
 }
