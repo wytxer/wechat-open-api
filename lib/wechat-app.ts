@@ -60,6 +60,20 @@ export class WechatApp {
   }
 
   /**
+   * 获取小程序调用凭据稳定版
+   * @link https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/mp-access-token/getStableAccessToken.html
+   * @returns
+   */
+  async stableAccessToken(): Promise<IAccessTokenResponse> {
+    const { appid, secret } = this.config
+
+    return await this.request({
+      method: 'get',
+      url: `/cgi-bin/stable_token?grant_type=client_credential&appid=${appid}&secret=${secret}`
+    })
+  }
+
+  /**
    * 获取小程序授权手机号
    * @link https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/phonenumber/phonenumber.getPhoneNumber.html
    * @returns
