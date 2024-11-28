@@ -45,6 +45,20 @@ export class WechatOfficialAccount {
   }
 
   /**
+   * 获取微信公众号调用凭据稳定版
+   * @link https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/getStableAccessToken.html
+   * @returns
+   */
+  async stableAccessToken(): Promise<IAccessTokenResponse> {
+    const { appid, secret } = this.config
+
+    return await this.request({
+      method: 'post',
+      url: `/cgi-bin/stable_token?grant_type=client_credential&appid=${appid}&secret=${secret}`
+    })
+  }
+
+  /**
    * 生成带参数的临时二维码
    * @link https://developers.weixin.qq.com/doc/offiaccount/Account_Management/Generating_a_Parametric_QR_Code.html
    * @returns

@@ -68,7 +68,7 @@ export class WechatApp {
     const { appid, secret } = this.config
 
     return await this.request({
-      method: 'get',
+      method: 'post',
       url: `/cgi-bin/stable_token?grant_type=client_credential&appid=${appid}&secret=${secret}`
     })
   }
