@@ -69,7 +69,12 @@ export class WechatApp {
 
     return await this.request({
       method: 'post',
-      url: `/cgi-bin/stable_token?grant_type=client_credential&appid=${appid}&secret=${secret}`
+      url: '/cgi-bin/stable_token',
+      data: {
+        grant_type: 'client_credential',
+        appid,
+        secret
+      }
     })
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "wechat-open-api",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "微信生态服务端接口",
   "main": "dist/index.js",
   "scripts": {
